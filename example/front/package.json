@@ -1,0 +1,7 @@
+{
+  "name": "exmaple-poll-js-front",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx parcel index.html"
+  }
+}
