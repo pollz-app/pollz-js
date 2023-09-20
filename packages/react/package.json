@@ -17,10 +17,11 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@pollz/sdk": "file:../sdk",
+    "@pollz/sdk": "^1.0.1",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.22"
-  }
+  },
+  "gitHead": "58a1b8021575e2fa4bdf7d8f1a07d35fd46fde3a"
 }
