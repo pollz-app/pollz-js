@@ -1,6 +1,6 @@
 {
   "name": "react-addons",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
@@ -15,8 +15,8 @@
   ],
   "scripts": {},
   "dependencies": {
-    "sdk": "file:../sdk",
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "sdk": "file:../sdk"
   },
   "devDependencies": {
     "@types/react": "^18.2.22"
