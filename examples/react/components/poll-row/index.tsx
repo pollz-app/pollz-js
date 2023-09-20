@@ -1,6 +1,5 @@
-import { EntryIdType, Poll } from "pollz";
+import { EntryIdType, Poll, usePollz } from "pollz";
 import React, { FC, useEffect } from "react";
-import { Pollz } from "../../utils/sdk";
 
 type Props = {
   poll: Poll;
@@ -9,6 +8,8 @@ type Props = {
 };
 
 export const PollRow: FC<Props> = ({ poll, vote, onUpdate }) => {
+  const Pollz = usePollz();
+
   useEffect(() => {
     const unsubscribe = Pollz.listen(poll.id, onUpdate);
 

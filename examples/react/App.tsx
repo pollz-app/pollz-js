@@ -1,10 +1,11 @@
+import { usePollz } from "pollz";
 import React, { useEffect, useState } from "react";
 import { AddPoll } from "./components/add-poll";
 import { PollsList } from "./components/polls-list";
-import { Pollz } from "./utils/sdk";
 
 export function App() {
   const [initialized, setInitialized] = useState(false);
+  const Pollz = usePollz();
 
   useEffect(() => {
     if (!Pollz.initialized) {

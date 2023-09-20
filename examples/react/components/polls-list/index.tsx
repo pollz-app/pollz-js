@@ -1,11 +1,11 @@
-import { EntryIdType, Poll } from "pollz";
+import { EntryIdType, Poll, usePollz } from "pollz";
 import React, { useCallback, useEffect } from "react";
-import { Pollz } from "../../utils/sdk";
-import { usePolls } from "../../utils/state";
+import { usePollsState } from "../../utils/state";
 import { PollRow } from "../poll-row";
 
 export const PollsList = () => {
-  const { updatePoll, polls, setPolls } = usePolls();
+  const Pollz = usePollz();
+  const { updatePoll, polls, setPolls } = usePollsState();
 
   const handleUpdate = useCallback(
     (poll: Poll) => {

@@ -12,7 +12,9 @@ type State = {
   polls: Poll[];
 };
 
-const PollsContext = React.createContext<ContextType | undefined>(undefined);
+const PollsStateContext = React.createContext<ContextType | undefined>(
+  undefined
+);
 
 enum ActionType {
   AddPoll = "AddPoll",
@@ -60,17 +62,17 @@ const reducer = (state: State, action: Action) => {
   }
 };
 
-export const usePolls = () => {
-  const value = useContext(PollsContext);
+export const usePollsState = () => {
+  const value = useContext(PollsStateContext);
 
   if (value === undefined) {
-    throw new Error("usePolls must be used inside a PollsProvider");
+    throw new Error("usePollsState must be used inside a PollsProvider");
   }
 
   return value;
 };
 
-export const PollsProvider: React.FC<React.PropsWithChildren> = ({
+export const PollsStateProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(reducer, { polls: [] });
@@ -97,10 +99,10 @@ export const PollsProvider: React.FC<React.PropsWithChildren> = ({
   }, []);
 
   return (
-    <PollsContext.Provider
+    <PollsStateContext.Provider
       value={{ addPoll, polls: state.polls, updatePoll, setPolls }}
     >
       {children}
-    </PollsContext.Provider>
+    </PollsStateContext.Provider>
   );
 };

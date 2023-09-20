@@ -145,4 +145,5 @@ export class PollzSDK implements Pollz {
   }
 }
 
+export * from "./react";
 export * from "./types";

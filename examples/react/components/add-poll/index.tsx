@@ -1,9 +1,10 @@
+import { usePollz } from "pollz";
 import React, { useState } from "react";
-import { Pollz } from "../../utils/sdk";
-import { usePolls } from "../../utils/state";
+import { usePollsState } from "../../utils/state";
 
 export const AddPoll = () => {
-  const { addPoll } = usePolls();
+  const Pollz = usePollz();
+  const { addPoll } = usePollsState();
   const [pollName, setPollName] = useState<string>("");
 
   const createPoll: React.FormEventHandler<HTMLFormElement> = async (e) => {
