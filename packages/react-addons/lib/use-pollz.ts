@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { PollzSDK } from "..";
+import { PollzSDK } from "sdk";
 import { PollzContext } from "./context";
 
 export const usePollz = (): PollzSDK => {

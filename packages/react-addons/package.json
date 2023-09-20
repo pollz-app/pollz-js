@@ -1,11 +1,11 @@
 {
-  "name": "react",
+  "name": "react-addons",
   "version": "0.0.0",
   "description": "> TODO: description",
-  "author": "Damien <damien.assany@kultralab.com>",
+  "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "lib/react.js",
+  "main": "lib/index.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -14,7 +14,11 @@
     "lib"
   ],
   "scripts": {},
-  "peerDependencies": {
+  "dependencies": {
+    "sdk": "file:../sdk",
     "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.22"
   }
 }

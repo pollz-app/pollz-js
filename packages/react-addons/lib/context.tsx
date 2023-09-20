@@ -1,5 +1,5 @@
 import React, { createContext, FC, PropsWithChildren, useRef } from "react";
-import { PollzSDK } from "..";
+import { PollzSDK } from "sdk";
 
 export const PollzContext = createContext<PollzSDK | undefined>(undefined);
 
