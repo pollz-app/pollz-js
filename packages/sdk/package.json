@@ -1,8 +1,8 @@
 {
-  "name": "sdk",
+  "name": "@pollz/sdk",
   "version": "1.0.0",
   "description": "> TODO: description",
-  "author": "Damien <damien.assany@kultralab.com>",
+  "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
   "license": "ISC",
   "main": "lib/index.ts",
@@ -13,5 +13,14 @@
   "files": [
     "lib"
   ],
-  "scripts": {}
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "socket.io-client": "^4.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.3"
+  }
 }

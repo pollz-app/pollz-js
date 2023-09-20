@@ -1,5 +1,5 @@
 {
-  "name": "react-addons",
+  "name": "@pollz/react",
   "version": "1.0.0",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
@@ -13,10 +13,12 @@
   "files": [
     "lib"
   ],
-  "scripts": {},
+  "scripts": {
+    "tsc": "tsc"
+  },
   "dependencies": {
     "react": "^18.2.0",
-    "sdk": "file:../sdk"
+    "@pollz/sdk": "file:../sdk"
   },
   "devDependencies": {
     "@types/react": "^18.2.22"
