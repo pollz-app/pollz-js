@@ -1,6 +1,5 @@
 {
   "name": "pollz",
-  "private": true,
   "workspaces": [
     "packages/*"
   ],
