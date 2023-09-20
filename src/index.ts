@@ -1,26 +1,41 @@
-import { io } from "socket.io-client";
-import { InitInput, Poll, PollInput } from "./types";
+import fetch, { RequestInit } from "node-fetch";
+import {
+  CreatePollInput,
+  EntryIdType,
+  InitInput,
+  InitResponse,
+  Poll,
+} from "./types";
 
-const API_URL = "http://localhost:3000";
-const socket = io(API_URL);
+const API_URL = "https://pollzwebapi.azurewebsites.net/api";
+// const socket = io(API_URL);
 
-class PollzSDK {
-  private projectId: string | null = null;
+export interface Pollz {
+  initialized: boolean;
+  init(input: InitInput): Promise<void>;
+  create(input: CreatePollInput): Promise<Poll>;
+  get(id: EntryIdType): Promise<Poll>;
+  getAll(): Promise<Poll[]>;
+  vote(
+    pollId: EntryIdType,
+    optionId: EntryIdType,
+    voterId: EntryIdType
+  ): Promise<Poll>;
+  listen(pollId: EntryIdType, callback: (poll: Poll) => void): () => void;
+}
+
+export class PollzSDK implements Pollz {
   private token: string | null = null;
   public get initialized() {
-    return this.projectId !== null && this.token !== null;
+    return this.token !== null;
   }
 
   private checkAppIsDefined() {
-    if (!this.projectId || !this.token) {
+    if (!this.token) {
       throw new Error(
         "App has not been initialized. Call the init method first."
       );
     }
-  }
-
-  private addProjectId<T>(input: T) {
-    return { ...input, projectId: this.projectId };
   }
 
   private fetchWithToken(url: string, options: RequestInit | undefined = {}) {
@@ -37,11 +52,11 @@ class PollzSDK {
   }
 
   async init(input: InitInput) {
-    if (this.token || this.projectId) {
+    if (this.token) {
       throw new Error("App already initialized");
     }
 
-    const res = await fetch(`${API_URL}/init`, {
+    const res = await fetch(`${API_URL}/sdk/auth`, {
       method: "POST",
       body: JSON.stringify(input),
       headers: {
@@ -50,61 +65,60 @@ class PollzSDK {
     });
 
     if (!res.ok) {
-      throw new Error("Invalid app credentials");
+      throw new Error("Error initializing the app");
     }
 
-    const { token, clientId } = await res.json();
+    const app = (await res.json()) as InitResponse;
 
-    this.projectId = clientId;
-    this.token = token;
+    if (app.error !== null) {
+      throw new Error(app.error);
+    }
+
+    this.token = app.token;
   }
 
-  async create(input: PollInput) {
+  async create(input: CreatePollInput) {
     this.checkAppIsDefined();
 
-    const res = await this.fetchWithToken(`${API_URL}/create`, {
+    const res = await this.fetchWithToken(`${API_URL}/polls`, {
       method: "POST",
-      body: JSON.stringify(this.addProjectId(input)),
+      body: JSON.stringify(input),
     });
 
     if (!res.ok) {
       throw new Error("Error creating poll");
     }
 
-    const createdPoll: Poll = await res.json();
+    const createdPoll = (await res.json()) as Poll;
 
     return createdPoll;
   }
 
-  async get(id: string) {
+  async get(id: EntryIdType) {
     const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
       method: "GET",
     });
 
     if (!res.ok) {
-      throw new Error("Error creating poll");
+      throw new Error("Error getting the poll");
     }
 
-    const poll: Poll = await res.json();
-
-    return poll;
+    return (await res.json()) as Poll;
   }
 
   async getAll() {
-    const res = await this.fetchWithToken(`${API_URL}/polls`, {
+    const res = await this.fetchWithToken(`${API_URL}/polls/all`, {
       method: "GET",
     });
 
     if (!res.ok) {
-      throw new Error("Error creating poll");
+      throw new Error("Error getting all polls");
     }
 
-    const polls: Poll[] = await res.json();
-
-    return polls;
+    return (await res.json()) as Poll[];
   }
 
-  async vote(pollId: string, optionId: string, voterId: string) {
+  async vote(pollId: EntryIdType, optionId: EntryIdType, voterId: EntryIdType) {
     this.checkAppIsDefined();
 
     const res = await this.fetchWithToken(`${API_URL}/polls/${pollId}/vote`, {
@@ -119,20 +133,16 @@ class PollzSDK {
       throw new Error("Error voting");
     }
 
-    const poll: Poll = await res.json();
-
-    return poll;
+    return (await res.json()) as Poll;
   }
 
-  listen(pollId: string, callback: (poll: Poll) => void): () => void {
-    socket.on(pollId, callback);
+  listen(pollId: EntryIdType, callback: (poll: Poll) => void): () => void {
+    // socket.on(`${pollId}`, callback);
 
     return () => {
-      socket.off(pollId, callback);
+      // socket.off(`${pollId}`, callback);
     };
   }
 }
 
-const Pollz = new PollzSDK();
-
-export default Pollz;
+export * from "./types";
