@@ -1,6 +1,6 @@
 {
   "name": "@pollz/sdk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
@@ -17,7 +17,6 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
     "socket.io-client": "^4.7.1"
   },
   "devDependencies": {

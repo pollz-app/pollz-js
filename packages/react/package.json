@@ -1,6 +1,6 @@
 {
   "name": "@pollz/react",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
@@ -17,7 +17,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@pollz/sdk": "^1.0.3",
+    "@pollz/sdk": "^1.0.4",
     "react": "^18.2.0"
   },
   "devDependencies": {
