@@ -7,14 +7,15 @@ export type PollType = {
 
 export type Poll = {
   id: EntryIdType;
-  title: string;
+  name: string;
   createdAt: Date;
-  appId: string;
+  appId: EntryIdType;
   pollType: PollType;
 };
 
 export type PollWithOptions = Poll & {
   options: Option[];
+  totalVotes: number;
 };
 
 export type CreatePollInput = {
@@ -38,10 +39,17 @@ export type InitResponse =
       error: string;
     };
 
+export type Voter = {
+  userId: string;
+  createdAt: string;
+  value?: string;
+  pollOptionId: EntryIdType;
+};
+
 export type Option = {
   id: EntryIdType;
   label: string;
-  voters: EntryIdType[];
+  voters: Voter[];
   pollId: EntryIdType;
 };
 
