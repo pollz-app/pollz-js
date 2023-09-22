@@ -1,6 +1,6 @@
 {
   "name": "@pollz/sdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
@@ -22,5 +22,5 @@
   "devDependencies": {
     "@types/node": "^20.6.3"
   },
-  "gitHead": "6cb81c7e1bbca2399e8af9a709cf8a08d4487c91"
+  "gitHead": "0e56b942debb427b2ceba691c5e26abb9861a766"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pollz/react",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "> TODO: description",
   "author": "Damien Assamy <damien.assany@gmail.com>",
   "homepage": "",
@@ -17,11 +17,11 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@pollz/sdk": "^1.0.5",
+    "@pollz/sdk": "^1.0.6",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.22"
   },
-  "gitHead": "6cb81c7e1bbca2399e8af9a709cf8a08d4487c91"
+  "gitHead": "0e56b942debb427b2ceba691c5e26abb9861a766"
 }
