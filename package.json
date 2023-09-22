@@ -16,28 +16,10 @@
   "devDependencies": {
     "@parcel/packager-ts": "2.9.3",
     "@parcel/transformer-typescript-types": "2.9.3",
-    "@types/node": "^20.6.3",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "assert": "^2.0.0",
-    "browserify-zlib": "^0.2.0",
-    "buffer": "^5.5.0||^6.0.0",
-    "events": "^3.1.0",
-    "https-browserify": "^1.0.0",
-    "parcel": "^2.9.3",
-    "path-browserify": "^1.0.0",
-    "process": "^0.11.10",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.1.0",
-    "typescript": ">=3.0.0",
-    "url": "^0.11.0",
-    "util": "^0.12.3"
+    "parcel": "latest",
+    "typescript": ">=3.0.0"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "socket.io-client": "^4.7.1",
-    "react": "^18.2.0"
+    "socket.io-client": "^4.7.1"
   }
 }
