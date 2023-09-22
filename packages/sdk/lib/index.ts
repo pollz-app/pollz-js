@@ -1,34 +1,34 @@
-import fetch, { RequestInit } from "node-fetch";
 import {
   CreatePollInput,
   EntryIdType,
   InitInput,
   InitResponse,
   Poll,
+  PollType,
+  PollTypes,
+  PollWithOptions,
+  VoteInputArgs,
 } from "./types";
 
 const API_URL = "https://pollzwebapi.azurewebsites.net/api";
 // const socket = io(API_URL);
 
 export interface Pollz {
-  initialized: boolean;
   init(input: InitInput): Promise<void>;
   create(input: CreatePollInput): Promise<Poll>;
   get(id: EntryIdType): Promise<Poll>;
   getAll(): Promise<Poll[]>;
-  vote(
+  getPollTypes(): Promise<PollType[]>;
+  vote(...args: VoteInputArgs): Promise<Poll>;
+
+  listen(
     pollId: EntryIdType,
-    optionId: EntryIdType,
-    voterId: EntryIdType
-  ): Promise<Poll>;
-  listen(pollId: EntryIdType, callback: (poll: Poll) => void): () => void;
+    callback: (poll: PollWithOptions) => void
+  ): () => void;
 }
 
 export class PollzSDK implements Pollz {
   private token: string | null = null;
-  public get initialized() {
-    return this.token !== null;
-  }
 
   private checkAppIsDefined() {
     if (!this.token) {
@@ -80,7 +80,7 @@ export class PollzSDK implements Pollz {
   async create(input: CreatePollInput) {
     this.checkAppIsDefined();
 
-    const res = await this.fetchWithToken(`${API_URL}/polls`, {
+    const res = await this.fetchWithToken(`${API_URL}/polls/create`, {
       method: "POST",
       body: JSON.stringify(input),
     });
@@ -103,7 +103,7 @@ export class PollzSDK implements Pollz {
       throw new Error("Error getting the poll");
     }
 
-    return (await res.json()) as Poll;
+    return (await res.json()) as PollWithOptions;
   }
 
   async getAll() {
@@ -118,15 +118,31 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as Poll[];
   }
 
-  async vote(pollId: EntryIdType, optionId: EntryIdType, voterId: EntryIdType) {
+  async vote(...args: VoteInputArgs) {
     this.checkAppIsDefined();
 
-    const res = await this.fetchWithToken(`${API_URL}/polls/${pollId}/vote`, {
+    const [pollId, optionId, userId, pollTypeId, value] = args;
+
+    const body =
+      pollTypeId === PollTypes.Range
+        ? {
+            pollOptionId: optionId,
+            userId,
+            pollTypeId,
+            pollId,
+            value,
+          }
+        : {
+            pollOptionId: optionId,
+            userId,
+            pollTypeId,
+            pollId,
+            value: "",
+          };
+
+    const res = await this.fetchWithToken(`${API_URL}/voters/vote`, {
       method: "POST",
-      body: JSON.stringify({
-        optionId,
-        voterId,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -136,7 +152,22 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as Poll;
   }
 
-  listen(pollId: EntryIdType, callback: (poll: Poll) => void): () => void {
+  async getPollTypes() {
+    const res = await this.fetchWithToken(`${API_URL}/polltypes/all`, {
+      method: "GET",
+    });
+
+    if (!res.ok) {
+      throw new Error("Error getting all poll types");
+    }
+
+    return (await res.json()) as PollType[];
+  }
+
+  listen(
+    pollId: EntryIdType,
+    callback: (poll: PollWithOptions) => void
+  ): () => void {
     // socket.on(`${pollId}`, callback);
 
     return () => {
