@@ -20,6 +20,12 @@ export interface Pollz {
   getAll(): Promise<Poll[]>;
   getPollTypes(): Promise<PollType[]>;
   vote(...args: VoteInputArgs): Promise<Poll>;
+  delete(id: EntryIdType): Promise<boolean>;
+  addOption(pollId: EntryIdType, option: string): Promise<PollWithOptions>;
+  deleteOption(
+    pollId: EntryIdType,
+    optionId: EntryIdType
+  ): Promise<PollWithOptions>;
 
   listen(
     pollId: EntryIdType,
@@ -119,8 +125,6 @@ export class PollzSDK implements Pollz {
   }
 
   async vote(...args: VoteInputArgs) {
-    this.checkAppIsDefined();
-
     const [pollId, optionId, userId, pollTypeId, value] = args;
 
     const body =
@@ -162,6 +166,46 @@ export class PollzSDK implements Pollz {
     }
 
     return (await res.json()) as PollType[];
+  }
+
+  async delete(id: EntryIdType) {
+    const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      throw new Error("Error deleting the poll");
+    }
+
+    return await res.json();
+  }
+
+  async addOption(pollId: EntryIdType, option: string) {
+    const res = await this.fetchWithToken(`${API_URL}/polloptions/${pollId}`, {
+      method: "POST",
+      body: JSON.stringify({ label: option }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error adding the option");
+    }
+
+    return (await res.json()) as PollWithOptions;
+  }
+
+  async deleteOption(pollId: EntryIdType, optionId: EntryIdType) {
+    const res = await this.fetchWithToken(
+      `${API_URL}/polloptions/${pollId}/${optionId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Error deleting the option");
+    }
+
+    return (await res.json()) as PollWithOptions;
   }
 
   listen(
