@@ -41,7 +41,7 @@ export interface Pollz {
     pollId: EntryIdType,
     optionId: EntryIdType,
     newName: string
-  ): Promise<{ id: EntryIdType; pollId: EntryIdType; label: string }>;
+  ): Promise<{ id: EntryIdType; pollId: EntryIdType; name: string }>;
 }
 
 export class PollzSDK implements Pollz {
@@ -232,16 +232,12 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as PollWithOptions;
   }
 
-  async renameOption(
-    pollId: EntryIdType,
-    optionId: EntryIdType,
-    newLabel: string
-  ) {
+  async renameOption(pollId: EntryIdType, optionId: EntryIdType, name: string) {
     const res = await this.fetchWithToken(
       `${API_URL}/polloptions/${pollId}/${optionId}`,
       {
         method: "PUT",
-        body: JSON.stringify({ label: newLabel }),
+        body: JSON.stringify({ name }),
       }
     );
 
@@ -252,7 +248,7 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as {
       id: EntryIdType;
       pollId: EntryIdType;
-      label: string;
+      name: string;
     };
   }
 
