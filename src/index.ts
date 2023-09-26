@@ -15,22 +15,33 @@ const API_URL = "https://pollzwebapi.azurewebsites.net/api";
 
 export interface Pollz {
   init(input: InitInput): Promise<void>;
+
+  // Poll
   create(input: CreatePollInput): Promise<Poll>;
   get(id: EntryIdType): Promise<Poll>;
   getAll(): Promise<Poll[]>;
-  getPollTypes(): Promise<PollType[]>;
-  vote(...args: VoteInputArgs): Promise<Poll>;
   delete(id: EntryIdType): Promise<boolean>;
+  vote(...args: VoteInputArgs): Promise<Poll>;
+  listen(
+    pollId: EntryIdType,
+    callback: (poll: PollWithOptions) => void
+  ): () => void;
+  rename(id: EntryIdType, newName: string): Promise<PollWithOptions>;
+
+  // PollTypes
+  getPollTypes(): Promise<PollType[]>;
+
+  // PollOptions
   addOption(pollId: EntryIdType, option: string): Promise<PollWithOptions>;
   deleteOption(
     pollId: EntryIdType,
     optionId: EntryIdType
   ): Promise<PollWithOptions>;
-
-  listen(
+  renameOption(
     pollId: EntryIdType,
-    callback: (poll: PollWithOptions) => void
-  ): () => void;
+    optionId: EntryIdType,
+    newName: string
+  ): Promise<{ id: EntryIdType; pollId: EntryIdType; label: string }>;
 }
 
 export class PollzSDK implements Pollz {
@@ -156,6 +167,19 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as Poll;
   }
 
+  async rename(id: EntryIdType, newName: string) {
+    const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ name: newName }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error renaming the poll");
+    }
+
+    return (await res.json()) as PollWithOptions;
+  }
+
   async getPollTypes() {
     const res = await this.fetchWithToken(`${API_URL}/polltypes/all`, {
       method: "GET",
@@ -206,6 +230,30 @@ export class PollzSDK implements Pollz {
     }
 
     return (await res.json()) as PollWithOptions;
+  }
+
+  async renameOption(
+    pollId: EntryIdType,
+    optionId: EntryIdType,
+    newLabel: string
+  ) {
+    const res = await this.fetchWithToken(
+      `${API_URL}/polloptions/${pollId}/${optionId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ label: newLabel }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Error renaming the option");
+    }
+
+    return (await res.json()) as {
+      id: EntryIdType;
+      pollId: EntryIdType;
+      label: string;
+    };
   }
 
   listen(
