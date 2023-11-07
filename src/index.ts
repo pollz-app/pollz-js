@@ -289,7 +289,7 @@ export class PollzSDK implements Pollz {
       throw new Error("Error creating the link");
     }
 
-    return (await res.json()) as string;
+    return await res.text();
   }
 
   async getAnonymousPoll(pollToken: string) {
