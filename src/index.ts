@@ -3,6 +3,7 @@ import {
   EntryIdType,
   InitInput,
   InitResponse,
+  OrderBy,
   Poll,
   PollType,
   PollTypes,
@@ -18,8 +19,8 @@ export interface Pollz {
 
   // Poll
   create(input: CreatePollInput): Promise<Poll>;
-  get(id: EntryIdType): Promise<Poll>;
-  getAll(): Promise<Poll[]>;
+  get(id: EntryIdType, orderOptionsBy?: OrderBy): Promise<Poll>;
+  getAll(orderBy?: OrderBy): Promise<Poll[]>;
   delete(id: EntryIdType): Promise<boolean>;
   vote(...args: VoteInputArgs): Promise<Poll>;
   listen(
@@ -42,6 +43,13 @@ export interface Pollz {
     optionId: EntryIdType,
     newName: string
   ): Promise<{ id: EntryIdType; pollId: EntryIdType; name: string }>;
+  createAnonymousToken(pollId: EntryIdType): Promise<string>;
+  getAnonymousPoll(pollToken: string): Promise<PollWithOptions>;
+  voteAnonymously(
+    anonymousPollToken: string,
+    optionId: EntryIdType,
+    userId?: string
+  ): Promise<boolean>;
 }
 
 export class PollzSDK implements Pollz {
@@ -111,10 +119,13 @@ export class PollzSDK implements Pollz {
     return createdPoll;
   }
 
-  async get(id: EntryIdType) {
-    const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
-      method: "GET",
-    });
+  async get(id: EntryIdType, orderOptionsBy = OrderBy.Asc) {
+    const res = await this.fetchWithToken(
+      `${API_URL}/polls/${id}?orderOptionsBy=${orderOptionsBy}`,
+      {
+        method: "GET",
+      }
+    );
 
     if (!res.ok) {
       throw new Error("Error getting the poll");
@@ -123,10 +134,13 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as PollWithOptions;
   }
 
-  async getAll() {
-    const res = await this.fetchWithToken(`${API_URL}/polls/all`, {
-      method: "GET",
-    });
+  async getAll(orderBy = OrderBy.Desc) {
+    const res = await this.fetchWithToken(
+      `${API_URL}/polls/all?orderBy=${orderBy}`,
+      {
+        method: "GET",
+      }
+    );
 
     if (!res.ok) {
       throw new Error("Error getting all polls");
@@ -261,6 +275,54 @@ export class PollzSDK implements Pollz {
     return () => {
       // socket.off(`${pollId}`, callback);
     };
+  }
+
+  async createAnonymousToken(pollId: number) {
+    const res = await this.fetchWithToken(
+      `${API_URL}/anonymous/token/${pollId}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Error creating the link");
+    }
+
+    return (await res.json()) as string;
+  }
+
+  async getAnonymousPoll(pollToken: string) {
+    const res = await this.fetchWithToken(`${API_URL}/anonymous`, {
+      method: "GET",
+    });
+
+    if (!res.ok) {
+      throw new Error("Error getting the anonymous poll");
+    }
+
+    return (await res.json()) as PollWithOptions;
+  }
+
+  async voteAnonymously(
+    anonymousPollToken: string,
+    optionId: number,
+    userId?: string | undefined
+  ) {
+    const res = await this.fetchWithToken(`${API_URL}/anonymous/vote`, {
+      method: "POST",
+      body: JSON.stringify({
+        anonymousPollToken,
+        userId,
+        pollOptionId: optionId,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error voting anonymously");
+    }
+
+    return (await res.json()) as boolean;
   }
 }
 

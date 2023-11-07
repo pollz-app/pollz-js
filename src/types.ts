@@ -74,3 +74,8 @@ export enum PollTypes {
   MultipleChoice = 2,
   Range = 3,
 }
+
+export enum OrderBy {
+  Desc = 0,
+  Asc = 1,
+}
