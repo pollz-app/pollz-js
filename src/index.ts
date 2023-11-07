@@ -63,15 +63,24 @@ export class PollzSDK implements Pollz {
     }
   }
 
-  private fetchWithToken(url: string, options: RequestInit | undefined = {}) {
+  private fetchWithToken(path: string, options: RequestInit | undefined = {}) {
     this.checkAppIsDefined();
 
-    return fetch(url, {
+    return fetch(`${API_URL}${path}`, {
       ...options,
       headers: {
         ...options.headers,
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
+      },
+    });
+  }
+  private fetch(path: string, options: RequestInit | undefined = {}) {
+    return fetch(`${API_URL}${path}`, {
+      ...options,
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
       },
     });
   }
@@ -81,7 +90,7 @@ export class PollzSDK implements Pollz {
       throw new Error("App already initialized");
     }
 
-    const res = await fetch(`${API_URL}/sdk/auth`, {
+    const res = await this.fetch("/sdk/auth", {
       method: "POST",
       body: JSON.stringify(input),
       headers: {
@@ -105,7 +114,7 @@ export class PollzSDK implements Pollz {
   async create(input: CreatePollInput) {
     this.checkAppIsDefined();
 
-    const res = await this.fetchWithToken(`${API_URL}/polls/create`, {
+    const res = await this.fetchWithToken("/polls/create", {
       method: "POST",
       body: JSON.stringify(input),
     });
@@ -121,7 +130,7 @@ export class PollzSDK implements Pollz {
 
   async get(id: EntryIdType, orderOptionsBy = OrderBy.Asc) {
     const res = await this.fetchWithToken(
-      `${API_URL}/polls/${id}?orderOptionsBy=${orderOptionsBy}`,
+      `/polls/${id}?orderOptionsBy=${orderOptionsBy}`,
       {
         method: "GET",
       }
@@ -135,12 +144,9 @@ export class PollzSDK implements Pollz {
   }
 
   async getAll(orderBy = OrderBy.Desc) {
-    const res = await this.fetchWithToken(
-      `${API_URL}/polls/all?orderBy=${orderBy}`,
-      {
-        method: "GET",
-      }
-    );
+    const res = await this.fetchWithToken(`/polls/all?orderBy=${orderBy}`, {
+      method: "GET",
+    });
 
     if (!res.ok) {
       throw new Error("Error getting all polls");
@@ -169,7 +175,7 @@ export class PollzSDK implements Pollz {
             value: "",
           };
 
-    const res = await this.fetchWithToken(`${API_URL}/voters/vote`, {
+    const res = await this.fetchWithToken("/voters/vote", {
       method: "POST",
       body: JSON.stringify(body),
     });
@@ -182,7 +188,7 @@ export class PollzSDK implements Pollz {
   }
 
   async rename(id: EntryIdType, newName: string) {
-    const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
+    const res = await this.fetchWithToken(`/polls/${id}`, {
       method: "PUT",
       body: JSON.stringify({ name: newName }),
     });
@@ -195,7 +201,7 @@ export class PollzSDK implements Pollz {
   }
 
   async getPollTypes() {
-    const res = await this.fetchWithToken(`${API_URL}/polltypes/all`, {
+    const res = await this.fetchWithToken("/polltypes/all", {
       method: "GET",
     });
 
@@ -207,7 +213,7 @@ export class PollzSDK implements Pollz {
   }
 
   async delete(id: EntryIdType) {
-    const res = await this.fetchWithToken(`${API_URL}/polls/${id}`, {
+    const res = await this.fetchWithToken(`/polls/${id}`, {
       method: "DELETE",
     });
 
@@ -219,7 +225,7 @@ export class PollzSDK implements Pollz {
   }
 
   async addOption(pollId: EntryIdType, option: string) {
-    const res = await this.fetchWithToken(`${API_URL}/polloptions/${pollId}`, {
+    const res = await this.fetchWithToken(`/polloptions/${pollId}`, {
       method: "POST",
       body: JSON.stringify({ label: option }),
     });
@@ -233,7 +239,7 @@ export class PollzSDK implements Pollz {
 
   async deleteOption(pollId: EntryIdType, optionId: EntryIdType) {
     const res = await this.fetchWithToken(
-      `${API_URL}/polloptions/${pollId}/${optionId}`,
+      `/polloptions/${pollId}/${optionId}`,
       {
         method: "DELETE",
       }
@@ -248,7 +254,7 @@ export class PollzSDK implements Pollz {
 
   async renameOption(pollId: EntryIdType, optionId: EntryIdType, name: string) {
     const res = await this.fetchWithToken(
-      `${API_URL}/polloptions/${pollId}/${optionId}`,
+      `/polloptions/${pollId}/${optionId}`,
       {
         method: "PUT",
         body: JSON.stringify({ name }),
@@ -278,12 +284,9 @@ export class PollzSDK implements Pollz {
   }
 
   async createAnonymousToken(pollId: number) {
-    const res = await this.fetchWithToken(
-      `${API_URL}/anonymous/token/${pollId}`,
-      {
-        method: "GET",
-      }
-    );
+    const res = await this.fetchWithToken(`/anonymous/token/${pollId}`, {
+      method: "GET",
+    });
 
     if (!res.ok) {
       throw new Error("Error creating the link");
@@ -293,7 +296,7 @@ export class PollzSDK implements Pollz {
   }
 
   async getAnonymousPoll(pollToken: string) {
-    const res = await this.fetchWithToken(`${API_URL}/anonymous`, {
+    const res = await this.fetch(`/anonymous?pollToken=${pollToken}`, {
       method: "GET",
     });
 
@@ -309,7 +312,7 @@ export class PollzSDK implements Pollz {
     optionId: number,
     userId?: string | undefined
   ) {
-    const res = await this.fetchWithToken(`${API_URL}/anonymous/vote`, {
+    const res = await this.fetch("/anonymous/vote", {
       method: "POST",
       body: JSON.stringify({
         anonymousPollToken,
