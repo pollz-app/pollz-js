@@ -79,3 +79,10 @@ export enum OrderBy {
   Desc = 0,
   Asc = 1,
 }
+
+export type PaginationMeta = {
+  totalCount: number;
+  page: number;
+  itemsPerPage: number;
+  pagesNumber: number;
+};

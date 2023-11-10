@@ -4,6 +4,7 @@ import {
   InitInput,
   InitResponse,
   OrderBy,
+  PaginationMeta,
   Poll,
   PollType,
   PollTypes,
@@ -20,7 +21,11 @@ export interface Pollz {
   // Poll
   create(input: CreatePollInput): Promise<Poll>;
   get(id: EntryIdType, orderOptionsBy?: OrderBy): Promise<Poll>;
-  getAll(orderBy?: OrderBy): Promise<Poll[]>;
+  getAll(
+    page: number,
+    itemsPerPage: number,
+    orderBy?: OrderBy
+  ): Promise<{ items: Poll[]; meta: PaginationMeta }>;
   delete(id: EntryIdType): Promise<boolean>;
   vote(...args: VoteInputArgs): Promise<Poll>;
   listen(
@@ -143,16 +148,24 @@ export class PollzSDK implements Pollz {
     return (await res.json()) as PollWithOptions;
   }
 
-  async getAll(orderBy = OrderBy.Desc) {
-    const res = await this.fetchWithToken(`/polls/all?orderBy=${orderBy}`, {
-      method: "GET",
-    });
+  async getAll(page?: number, itemsPerPage?: number, orderBy = OrderBy.Desc) {
+    const pageParameter = page ? `&page=${page}` : "";
+    const itemsPerPageParameter = itemsPerPage
+      ? `&itemsPerPage=${itemsPerPage}`
+      : "";
+
+    const res = await this.fetchWithToken(
+      `/polls/all?orderBy=${orderBy}${pageParameter}${itemsPerPageParameter}`,
+      {
+        method: "GET",
+      }
+    );
 
     if (!res.ok) {
       throw new Error("Error getting all polls");
     }
 
-    return (await res.json()) as Poll[];
+    return (await res.json()) as { items: Poll[]; meta: PaginationMeta };
   }
 
   async vote(...args: VoteInputArgs) {
