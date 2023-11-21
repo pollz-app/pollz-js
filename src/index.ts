@@ -1,3 +1,4 @@
+import { io } from "socket.io-client";
 import {
   CreatePollInput,
   EntryIdType,
@@ -13,7 +14,7 @@ import {
 } from "./types";
 
 const API_URL = "https://pollzwebapi.azurewebsites.net/api";
-// const socket = io(API_URL);
+const WS_URL = "https://pollz-ws.onrender.com";
 
 export interface Pollz {
   init(input: InitInput): Promise<void>;
@@ -59,6 +60,9 @@ export interface Pollz {
 
 export class PollzSDK implements Pollz {
   private token: string | null = null;
+  private socket = io(WS_URL, {
+    auth: (cb) => cb({ token: this.token }),
+  });
 
   private checkAppIsDefined() {
     if (!this.token) {
@@ -289,10 +293,10 @@ export class PollzSDK implements Pollz {
     pollId: EntryIdType,
     callback: (poll: PollWithOptions) => void
   ): () => void {
-    // socket.on(`${pollId}`, callback);
+    this.socket.on(`${pollId}`, callback);
 
     return () => {
-      // socket.off(`${pollId}`, callback);
+      this.socket.off(`${pollId}`, callback);
     };
   }
 
