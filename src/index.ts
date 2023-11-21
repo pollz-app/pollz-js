@@ -1,4 +1,4 @@
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 import {
   CreatePollInput,
   EntryIdType,
@@ -60,9 +60,7 @@ export interface Pollz {
 
 export class PollzSDK implements Pollz {
   private token: string | null = null;
-  private socket = io(WS_URL, {
-    auth: (cb) => cb({ token: this.token }),
-  });
+  private socket: Socket | undefined = undefined;
 
   private checkAppIsDefined() {
     if (!this.token) {
@@ -118,6 +116,12 @@ export class PollzSDK implements Pollz {
     }
 
     this.token = app.token;
+
+    this.socket = io(WS_URL, {
+      auth: { token: app.token },
+    });
+
+    return Promise.resolve();
   }
 
   async create(input: CreatePollInput) {
@@ -293,10 +297,10 @@ export class PollzSDK implements Pollz {
     pollId: EntryIdType,
     callback: (poll: PollWithOptions) => void
   ): () => void {
-    this.socket.on(`${pollId}`, callback);
+    this.socket?.on(`${pollId}`, callback);
 
     return () => {
-      this.socket.off(`${pollId}`, callback);
+      this.socket?.off(`${pollId}`, callback);
     };
   }
 
