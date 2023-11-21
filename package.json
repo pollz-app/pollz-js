@@ -1,6 +1,6 @@
 {
   "name": "pollz-js",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "JS SDK to interact with Pollz API",
   "source": "src/index.ts",
   "main": "dist/index.js",
