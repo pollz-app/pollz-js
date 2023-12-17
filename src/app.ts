@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { Socket, io } from "socket.io-client";
+import { version } from "../package.json";
 import { InitInput, InitResponse } from "./types";
 
 const API_URL = "https://pollzwebapi.azurewebsites.net/api";
@@ -11,10 +12,7 @@ export class App {
     baseURL: API_URL,
     headers: {
       "x-pollz-origin": "sdk",
-    },
-    transformRequest: (data, headers) => {
-      headers["Content-Type"] = "application/json";
-      return JSON.stringify(data);
+      "x-pollz-version": version,
     },
   });
   socket: Socket | undefined = undefined;
@@ -38,7 +36,9 @@ export class App {
       method: options.method || "GET",
       data: options.data,
       transformRequest: (data, headers) => {
+        headers["Content-Type"] = "application/json";
         headers["Authorization"] = `Bearer ${this.token}`;
+        return JSON.stringify(data);
       },
     });
 
@@ -50,6 +50,10 @@ export class App {
       url: path,
       method: options.method || "GET",
       data: options.data,
+      transformRequest: (data, headers) => {
+        headers["Content-Type"] = "application/json";
+        return JSON.stringify(data);
+      },
     });
 
     return response;
@@ -68,8 +72,6 @@ export class App {
     if (res.status !== 200) {
       throw new Error("Error initializing the app");
     }
-
-    console.log(res.data);
 
     const app = res.data as InitResponse;
 
