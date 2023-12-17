@@ -55,18 +55,16 @@ export type Option = {
 
 export type VoteInputArgs =
   | [
-      pollId: EntryIdType,
-      optionId: EntryIdType,
-      userId: string,
       pollTypeId: PollTypes.Range,
-      value: string
+      pollId: EntryIdType,
+      value: string,
+      userId: string
     ]
   | [
-      pollId: EntryIdType,
-      optionId: EntryIdType,
-      userId: string,
       pollTypeId: PollTypes.MultipleChoice | PollTypes.SingleChoice,
-      value?: undefined
+      pollId: EntryIdType,
+      optionIds: EntryIdType[],
+      userId: string
     ];
 
 export enum PollTypes {

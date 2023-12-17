@@ -8,9 +8,8 @@
     "esModuleInterop": true,
     "declaration": true,
     "sourceMap": true,
-    "moduleResolution": "node",
-    "jsx": "react"
+    "moduleResolution": "node"
   },
-  "include": ["src/**/*.ts", "src/react/context.tsx"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
