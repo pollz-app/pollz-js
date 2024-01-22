@@ -5,7 +5,6 @@ import {
   OrderBy,
   PaginationMeta,
   Poll,
-  PollTypes,
   PollWithOptions,
   VoteInputArgs,
 } from "./types";
@@ -65,22 +64,13 @@ export class Polls {
 
   async vote(...args: VoteInputArgs) {
     const [pollTypeId, pollId, value, userId] = args;
-    const body =
-      pollTypeId === PollTypes.Range
-        ? {
-            userId,
-            pollTypeId,
-            pollId,
-            value,
-            pollOptionIds: [],
-          }
-        : {
-            pollOptionIds: value,
-            userId,
-            pollTypeId,
-            pollId,
-            value: "",
-          };
+    const body = {
+      pollOptionIds: value,
+      userId,
+      pollTypeId,
+      pollId,
+      value: "",
+    };
 
     const res = await app.fetchWithToken("/voters/vote", {
       method: "POST",
@@ -119,11 +109,31 @@ export class Polls {
     return await res.data;
   }
 
-  listen(pollId: EntryIdType, callback: (poll: PollWithOptions) => void) {
-    app.socket?.on(`${pollId}`, callback);
+  listen(
+    pollId: EntryIdType,
+    callback: (poll: PollWithOptions) => void,
+    orderOptionsBy = OrderBy.Asc
+  ) {
+    const handler = (poll: PollWithOptions) => {
+      const orderedOptionsByCreatedAt = [...poll.options].sort((a, b) => {
+        if (orderOptionsBy === OrderBy.Asc) {
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        }
+
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+
+      callback({ ...poll, options: orderedOptionsByCreatedAt });
+    };
+
+    app.socket?.on(`${pollId}`, handler);
 
     return () => {
-      app.socket?.off(`${pollId}`, callback);
+      app.socket?.off(`${pollId}`, handler);
     };
   }
 }

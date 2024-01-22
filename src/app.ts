@@ -3,8 +3,8 @@ import { Socket, io } from "socket.io-client";
 import { version } from "../package.json";
 import { InitInput, InitResponse } from "./types";
 
-const API_URL = "https://pollzwebapi.azurewebsites.net/api";
-const WS_URL = "https://pollz-ws.onrender.com";
+const API_URL = process.env.API_URL as string;
+const WS_URL = process.env.WS_URL as string;
 
 export class App {
   private token: string | null = null;

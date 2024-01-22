@@ -8,7 +8,7 @@ export type PollType = {
 export type Poll = {
   id: EntryIdType;
   name: string;
-  createdAt: Date;
+  createdAt: string;
   appId: EntryIdType;
   pollType: PollType;
 };
@@ -51,26 +51,19 @@ export type Option = {
   label: string;
   voters: Voter[];
   pollId: EntryIdType;
+  createdAt: string;
 };
 
-export type VoteInputArgs =
-  | [
-      pollTypeId: PollTypes.Range,
-      pollId: EntryIdType,
-      value: string,
-      userId: string
-    ]
-  | [
-      pollTypeId: PollTypes.MultipleChoice | PollTypes.SingleChoice,
-      pollId: EntryIdType,
-      optionIds: EntryIdType[],
-      userId: string
-    ];
+export type VoteInputArgs = [
+  pollTypeId: PollTypes.MultipleChoice | PollTypes.SingleChoice,
+  pollId: EntryIdType,
+  optionIds: EntryIdType[],
+  userId: string
+];
 
 export enum PollTypes {
   SingleChoice = 1,
   MultipleChoice = 2,
-  Range = 3,
 }
 
 export enum OrderBy {
