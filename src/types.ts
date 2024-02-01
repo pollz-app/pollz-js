@@ -54,16 +54,10 @@ export type Option = {
   createdAt: string;
 };
 
-export type VoteInputArgs = [
-  pollTypeId: PollTypes.MultipleChoice | PollTypes.SingleChoice,
-  pollId: EntryIdType,
-  optionIds: EntryIdType[],
-  userId: string
-];
-
 export enum PollTypes {
   SingleChoice = 1,
   MultipleChoice = 2,
+  Scale = 4,
 }
 
 export enum OrderBy {

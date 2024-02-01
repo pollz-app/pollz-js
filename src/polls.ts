@@ -5,8 +5,8 @@ import {
   OrderBy,
   PaginationMeta,
   Poll,
+  PollTypes,
   PollWithOptions,
-  VoteInputArgs,
 } from "./types";
 
 export class Polls {
@@ -62,10 +62,14 @@ export class Polls {
     return res.data as { items: Poll[]; meta: PaginationMeta };
   }
 
-  async vote(...args: VoteInputArgs) {
-    const [pollTypeId, pollId, value, userId] = args;
+  async vote(
+    pollTypeId: PollTypes,
+    pollId: EntryIdType,
+    optionIds: EntryIdType[],
+    userId: string
+  ) {
     const body = {
-      pollOptionIds: value,
+      pollOptionIds: optionIds,
       userId,
       pollTypeId,
       pollId,
